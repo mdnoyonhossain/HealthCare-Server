@@ -2,7 +2,7 @@
 
 Welcome to the backend repository for PH HealthCare. This repository contains the backend codebase responsible for handling server-side logic, database management, and communication between different system components.
 
-## Table of Contents
+<!-- ## Table of Contents
 - [PH HealthCare Backend](#ph-healthcare-backend)
   - [Table of Contents](#table-of-contents)
   - [Technologies Used](#technologies-used)
@@ -11,7 +11,7 @@ Welcome to the backend repository for PH HealthCare. This repository contains th
   - [Usage](#usage)
   - [API Endpoints](#api-endpoints)
   - [Contributing](#contributing)
-  - [License](#license)
+  - [License](#license) -->
 
 ## Technologies Used
 - **Node.js**: Runtime environment for executing JavaScript code.
