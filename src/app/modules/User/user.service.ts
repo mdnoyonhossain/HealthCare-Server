@@ -27,6 +27,6 @@ const createAdmin = async (payload: any) => {
     return result;
 }
 
-export const userService = {
+export const UserService = {
     createAdmin
 }
