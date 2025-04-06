@@ -56,6 +56,17 @@ const getAllAdminFromDB = async (params: any, options: any) => {
     }
 }
 
+const getSingleAdminFromDB = async (id: string) => {
+    const result = await prisma.admin.findUniqueOrThrow({
+        where: {
+            id
+        }
+    });
+
+    return result;
+}
+
 export const AdminService = {
-    getAllAdminFromDB
+    getAllAdminFromDB,
+    getSingleAdminFromDB
 }

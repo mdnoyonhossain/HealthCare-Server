@@ -25,6 +25,27 @@ const getAllAdminFromDB = async (req: Request, res: Response) => {
     }
 }
 
+const getSingleAdminFromDB = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await AdminService.getSingleAdminFromDB(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Admin Data Retrived By ID!",
+            data: result
+        });
+    }
+    catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.name || "Something went wrong!",
+            error: err
+        })
+    }
+}
+
 export const AdminController = {
-    getAllAdminFromDB
+    getAllAdminFromDB,
+    getSingleAdminFromDB
 }
