@@ -1,10 +1,10 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { UserService } from "./user.service";
 import sendResponse from "../../../shared/sendResponse";
 import httpStatus from "http-status";
 
 
-const createAdmin = async (req: Request, res: Response) => {
+const createAdmin = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const adminData = req.body;
         const result = await UserService.createAdmin(adminData);
@@ -17,11 +17,7 @@ const createAdmin = async (req: Request, res: Response) => {
         });
     }
     catch (err: any) {
-        res.status(500).json({
-            success: false,
-            message: err.name || "Something went wrong!",
-            error: err
-        })
+        next(err)
     }
 }
 
