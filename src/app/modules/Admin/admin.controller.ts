@@ -53,7 +53,27 @@ const updateAdminIntoDB = async (req: Request, res: Response) => {
 
         res.status(200).json({
             success: true,
-            message: "Admin data has been successfully updated.",
+            message: "Admin data has been updated successfully.",
+            data: result
+        });
+    }
+    catch (err: any) {
+        res.status(500).json({
+            success: false,
+            message: err.name || "Something went wrong!",
+            error: err
+        })
+    }
+}
+
+const deleteAdminFromDB = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const result = await AdminService.deleteAdminFromDB(id);
+
+        res.status(200).json({
+            success: true,
+            message: "Admin data has been deleted successfully.",
             data: result
         });
     }
@@ -69,5 +89,6 @@ const updateAdminIntoDB = async (req: Request, res: Response) => {
 export const AdminController = {
     getAllAdminFromDB,
     getSingleAdminFromDB,
-    updateAdminIntoDB
+    updateAdminIntoDB,
+    deleteAdminFromDB
 }
