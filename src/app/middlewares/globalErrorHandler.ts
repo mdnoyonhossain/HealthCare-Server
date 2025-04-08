@@ -6,7 +6,7 @@ const globalErrorHandler = (err: any, req: Request, res: Response, next: NextFun
         success: false,
         message: err.name || httpStatus.INTERNAL_SERVER_ERROR,
         error: err
-    })
+    });
 }
 
 export default globalErrorHandler;
