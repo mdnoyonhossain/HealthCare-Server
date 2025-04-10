@@ -7,11 +7,20 @@ const loginUser = catchAsync(async (req, res) => {
     const userData = req.body;
     const result = await AuthService.loginUser(userData);
 
+    const { refreshToken } = result;
+    res.cookie('refreshToken', refreshToken, {
+        secure: false,
+        httpOnly: true
+    });
+
     sendResponse(res, {
         statusCode: httpStatus.OK,
         success: true,
         message: "User logged in successfully.",
-        data: result
+        data: {
+            accessToken: result.accessToken,
+            needPasswordChange: result.needPasswordChange
+        }
     });
 });
 
