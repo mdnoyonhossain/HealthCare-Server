@@ -1,7 +1,7 @@
+import { JwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
 import { TLoginUser } from "./auth.interface";
 import bcrypt from "bcrypt";
-import jwt from 'jsonwebtoken';
 
 const loginUser = async (payload: TLoginUser) => {
     const userData = await prisma.user.findUniqueOrThrow({
@@ -20,8 +20,8 @@ const loginUser = async (payload: TLoginUser) => {
         role: userData?.role
     }
 
-    const accessToken = jwt.sign(userPayload, 'fdafda', { algorithm: 'HS256', expiresIn: '5m' });
-    const refreshToken = jwt.sign(userPayload, 'ffff', { algorithm: 'HS256', expiresIn: '5d' });
+    const accessToken = JwtHelpers.generateToken(userPayload, 'fdasfas', '5m');
+    const refreshToken = JwtHelpers.generateToken(userPayload, 'ffffff', '10d');
 
     return {
         accessToken,
