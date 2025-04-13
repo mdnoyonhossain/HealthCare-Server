@@ -2,6 +2,7 @@ import { JwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
 import { TLoginUser } from "./auth.interface";
 import bcrypt from "bcrypt";
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const loginUser = async (payload: TLoginUser) => {
     const userData = await prisma.user.findUniqueOrThrow({
@@ -30,6 +31,35 @@ const loginUser = async (payload: TLoginUser) => {
     };
 }
 
+const refreshToken = async (token: string) => {
+    let decodedData;
+    try {
+        decodedData = jwt.verify(token, 'ffffff') as JwtPayload;
+    }
+    catch (err) {
+        throw new Error("Failed to refresh token. Please login again.")
+    }
+
+    const userData = await prisma.user.findUniqueOrThrow({
+        where: {
+            email: decodedData?.email
+        }
+    });
+
+    const userPayload = {
+        email: userData?.email,
+        role: userData?.role
+    }
+
+    const accessToken = JwtHelpers.generateToken(userPayload, 'fdasfas', '5m');
+
+    return {
+        accessToken,
+        needPasswordChange: userData?.needPasswordChange
+    }
+}
+
 export const AuthService = {
-    loginUser
+    loginUser,
+    refreshToken
 }
