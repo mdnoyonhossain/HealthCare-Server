@@ -1,13 +1,14 @@
+import { UserStatus } from "@prisma/client";
 import { JwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
 import { TLoginUser } from "./auth.interface";
 import bcrypt from "bcrypt";
-import jwt, { JwtPayload } from 'jsonwebtoken';
 
 const loginUser = async (payload: TLoginUser) => {
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
-            email: payload.email
+            email: payload.email,
+            status: UserStatus.ACTIVE
         }
     });
 
@@ -34,7 +35,7 @@ const loginUser = async (payload: TLoginUser) => {
 const refreshToken = async (token: string) => {
     let decodedData;
     try {
-        decodedData = jwt.verify(token, 'ffffff') as JwtPayload;
+        decodedData = JwtHelpers.verifyToken(token, 'ffffff');
     }
     catch (err) {
         throw new Error("Failed to refresh token. Please login again.")
@@ -42,7 +43,8 @@ const refreshToken = async (token: string) => {
 
     const userData = await prisma.user.findUniqueOrThrow({
         where: {
-            email: decodedData?.email
+            email: decodedData?.email,
+            status: UserStatus.ACTIVE
         }
     });
 
