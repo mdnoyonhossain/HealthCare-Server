@@ -160,7 +160,7 @@ const resetPassword = async (token: string, payload: TResetPassword) => {
 
     await prisma.user.update({
         where: {
-            id: userData.id,
+            id: payload.id,
         },
         data: {
             password: hashedPassword,
