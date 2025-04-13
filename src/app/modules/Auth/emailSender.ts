@@ -15,14 +15,12 @@ export const emailSender = async (email: string, html: string) => {
         }
     });
 
-    const info = await transporter.sendMail({
+    await transporter.sendMail({
         from: `"PH-HealthCare Support" <${config.emailSender.sender_email}>`,
         to: email,
         subject: "Reset Your Password - PH HealthCare",
         html
     });
-
-    console.log(info.messageId);
 };
 
 export default emailSender;

@@ -1,7 +1,7 @@
 import { UserStatus } from "@prisma/client";
 import { JwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
-import { TChangePassword, TForgotPassword, TLoginUser } from "./auth.interface";
+import { TChangePassword, TForgotPassword, TLoginUser, TResetPassword } from "./auth.interface";
 import bcrypt from "bcrypt";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
@@ -111,7 +111,7 @@ const forgotPassword = async (payload: TForgotPassword) => {
 
     const resetPasswordToken = JwtHelpers.generateToken(userPayload, config.jwt.reset_password_secret as Secret, config.jwt.reset_password_expires_in);
     const resetLink = `${config.jwt.reset_frontend_url}?userId=${userData?.id}&token=${resetPasswordToken}`;
-    
+
     await emailSender(
         userData?.email,
         `
@@ -143,9 +143,40 @@ const forgotPassword = async (payload: TForgotPassword) => {
     return userData.email;
 }
 
+const resetPassword = async (token: string, payload: TResetPassword) => {
+    const userData = await prisma.user.findUniqueOrThrow({
+        where: {
+            id: payload.id,
+            status: UserStatus.ACTIVE
+        }
+    });
+
+    const isValidToken = JwtHelpers.verifyToken(token, config.jwt.reset_password_secret as Secret);
+    if (!isValidToken) {
+        throw new ApiError(httpStatus.FORBIDDEN, "Invalid or expired token. Please try again.");
+    }
+
+    const hashedPassword = await bcrypt.hash(payload?.password, Number(config.bcrypt_salt_round));
+
+    await prisma.user.update({
+        where: {
+            id: userData.id,
+        },
+        data: {
+            password: hashedPassword,
+            needPasswordChange: false
+        }
+    });
+
+    return {
+        message: "Your password has been successfully updated. You can now log in with your new password."
+    };
+}
+
 export const AuthService = {
     loginUser,
     refreshToken,
     changePassword,
-    forgotPassword
+    forgotPassword,
+    resetPassword
 }
