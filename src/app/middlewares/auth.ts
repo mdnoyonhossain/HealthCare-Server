@@ -6,7 +6,7 @@ import ApiError from "../errors/ApiError";
 import httpStatus from "http-status";
 
 const auth = (...roles: string[]) => {
-    return async (req: Request, res: Response, next: NextFunction) => {
+    return async (req: Request & { user?: any }, res: Response, next: NextFunction) => {
         try {
             const token = req.headers.authorization;
             if (!token) {
@@ -14,6 +14,8 @@ const auth = (...roles: string[]) => {
             }
 
             const verifiedUser = JwtHelpers.verifyToken(token, config.jwt.access_token_secrte as Secret);
+            req.user = verifiedUser;
+
             if (roles.length && !roles.includes(verifiedUser?.role)) {
                 throw new ApiError(httpStatus.FORBIDDEN, `Access denied. Your role '${verifiedUser.role}' does not have permission to perform this action.`);
             }

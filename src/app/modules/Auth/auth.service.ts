@@ -1,10 +1,12 @@
 import { UserStatus } from "@prisma/client";
 import { JwtHelpers } from "../../../helpers/jwtHelpers";
 import prisma from "../../../shared/prisma";
-import { TLoginUser } from "./auth.interface";
+import { TChangePassword, TLoginUser } from "./auth.interface";
 import bcrypt from "bcrypt";
 import config from "../../../config";
 import { Secret } from "jsonwebtoken";
+import ApiError from "../../errors/ApiError";
+import httpStatus from "http-status";
 
 const loginUser = async (payload: TLoginUser) => {
     const userData = await prisma.user.findUniqueOrThrow({
@@ -16,7 +18,7 @@ const loginUser = async (payload: TLoginUser) => {
 
     const isCorrectPassword: boolean = await bcrypt.compare(payload.password, userData?.password);
     if (!isCorrectPassword) {
-        throw new Error("Password Incorrent!");
+        throw new ApiError(httpStatus.UNAUTHORIZED, "The current password you entered is incorrect. Please try again.");
     }
 
     const userPayload = {
@@ -63,7 +65,38 @@ const refreshToken = async (token: string) => {
     }
 }
 
+const changePassword = async (user: any, payload: TChangePassword) => {
+    const userData = await prisma.user.findUniqueOrThrow({
+        where: {
+            email: user.email,
+            status: UserStatus.ACTIVE
+        }
+    });
+
+    const isCorrectPassword: boolean = await bcrypt.compare(payload?.oldPassword, userData?.password);
+    if (!isCorrectPassword) {
+        throw new ApiError(httpStatus.FORBIDDEN, "The current password you entered is incorrect. Please try again.");
+    }
+
+    const hashedPassword = await bcrypt.hash(payload?.newPassword, Number(config.bcrypt_salt_round));
+
+    await prisma.user.update({
+        where: {
+            email: userData.email,
+        },
+        data: {
+            password: hashedPassword,
+            needPasswordChange: false
+        }
+    });
+
+    return {
+        message: "Your password has been changed successfully. For your security, please use the new password for all subsequent logins."
+    };
+}
+
 export const AuthService = {
     loginUser,
-    refreshToken
+    refreshToken,
+    changePassword
 }
