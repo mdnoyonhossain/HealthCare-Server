@@ -1,4 +1,4 @@
-import { Admin, Doctor, Patient, Prisma, UserRole } from "@prisma/client";
+import { Admin, Doctor, Patient, Prisma, UserRole, UserStatus } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../../shared/prisma";
 import config from "../../../config";
@@ -164,9 +164,29 @@ const getAllUserFromDB = async (params: any, options: TPaginationOptions) => {
     }
 }
 
+const changeProfileStatus = async (id: string, payload: { status: UserStatus }) => {
+    await prisma.user.findUniqueOrThrow({
+        where: {
+            id
+        }
+    });
+
+    const updateUserStatus = await prisma.user.update({
+        where: {
+            id
+        },
+        data: {
+            status: payload.status
+        }
+    });
+
+    return updateUserStatus;
+}
+
 export const UserService = {
     createAdmin,
     createDoctor,
     createPatient,
-    getAllUserFromDB
+    getAllUserFromDB,
+    changeProfileStatus
 }
