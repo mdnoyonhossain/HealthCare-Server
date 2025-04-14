@@ -135,6 +135,18 @@ const getAllUserFromDB = async (params: any, options: TPaginationOptions) => {
             [sortBy]: sortOrder
         } : {
             createdAt: 'desc'
+        },
+        select: {
+            id: true,
+            email: true,
+            role: true,
+            needPasswordChange: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true,
+            admin: true,
+            doctor: true,
+            patient: true
         }
     });
 
