@@ -6,7 +6,6 @@ import { TAdminFilterRequest } from "./admin.interface";
 import { TPaginationOptions } from "../../interfaces/pagination";
 
 const getAllAdminFromDB = async (params: TAdminFilterRequest, options: TPaginationOptions) => {
-    console.log(options);
     const { page, limit, skip, sortBy, sortOrder } = PaginationHelper.calculatePagination(options);
     const andCondions: Prisma.AdminWhereInput[] = [];
     const { searchTerm, ...filterData } = params;

@@ -3,13 +3,13 @@ import bcrypt from "bcrypt";
 import prisma from "../../../shared/prisma";
 import config from "../../../config";
 import { fileUploader } from "../../../helpers/fileUploader";
+import { TFile } from "../../interfaces/file";
 
 const createAdmin = async (req: any) => {
-    const file = req.file;
+    const file: TFile = req.file;
     if (file) {
         const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
         req.body.admin.profilePhoto = uploadToCloudinary?.secure_url;
-        console.log(req.body);
     }
 
     const hashedPassword = await bcrypt.hash(req.body.password, Number(config.bcrypt_salt_round));
