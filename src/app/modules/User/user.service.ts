@@ -1,12 +1,16 @@
-import { UserRole } from "@prisma/client";
+import { Admin, Doctor, Patient, Prisma, UserRole } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../../shared/prisma";
 import config from "../../../config";
 import { fileUploader } from "../../../helpers/fileUploader";
 import { TFile } from "../../interfaces/file";
+import { Request } from "express";
+import { TPaginationOptions } from "../../interfaces/pagination";
+import { PaginationHelper } from "../../../helpers/paginationHelper";
+import { UserSearchableFields } from "./user.constant";
 
-const createAdmin = async (req: any) => {
-    const file: TFile = req.file;
+const createAdmin = async (req: Request): Promise<Admin> => {
+    const file = req.file as TFile;
     if (file) {
         const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
         req.body.admin.profilePhoto = uploadToCloudinary?.secure_url;
@@ -35,8 +39,8 @@ const createAdmin = async (req: any) => {
     return result;
 }
 
-const createDoctor = async (req: any) => {
-    const file: TFile = req.file;
+const createDoctor = async (req: Request): Promise<Doctor> => {
+    const file = req.file as TFile;
     if (file) {
         const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
         req.body.doctor.profilePhoto = uploadToCloudinary?.secure_url;
@@ -65,8 +69,8 @@ const createDoctor = async (req: any) => {
     return result;
 }
 
-const createPatient = async (req: any) => {
-    const file: TFile = req.file;
+const createPatient = async (req: Request): Promise<Patient> => {
+    const file = req.file as TFile;
     if (file) {
         const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
         req.body.patient.profilePhoto = uploadToCloudinary?.secure_url;
@@ -95,8 +99,62 @@ const createPatient = async (req: any) => {
     return result;
 }
 
+const getAllUserFromDB = async (params: any, options: TPaginationOptions) => {
+    const { page, limit, skip, sortBy, sortOrder } = PaginationHelper.calculatePagination(options);
+    const andCondions: Prisma.UserWhereInput[] = [];
+    const { searchTerm, ...filterData } = params;
+
+    if (params?.searchTerm) {
+        andCondions.push({
+            OR: UserSearchableFields.map(field => ({
+                [field]: {
+                    contains: params.searchTerm,
+                    mode: "insensitive"
+                }
+            }))
+        })
+    }
+
+    if (Object.keys(filterData).length > 0) {
+        andCondions.push({
+            AND: Object.keys(filterData).map(key => ({
+                [key]: {
+                    equals: (filterData as any)[key]
+                }
+            }))
+        })
+    }
+
+    const whereCondions: Prisma.UserWhereInput = andCondions.length > 0 ? { AND: andCondions } : {};
+
+    const result = await prisma.user.findMany({
+        where: whereCondions,
+        skip,
+        take: Number(limit),
+        orderBy: sortBy && sortOrder ? {
+            [sortBy]: sortOrder
+        } : {
+            createdAt: 'desc'
+        }
+    });
+
+    const total = await prisma.user.count({
+        where: whereCondions
+    });
+
+    return {
+        meta: {
+            page,
+            limit,
+            total
+        },
+        data: result
+    }
+}
+
 export const UserService = {
     createAdmin,
     createDoctor,
-    createPatient
+    createPatient,
+    getAllUserFromDB
 }
