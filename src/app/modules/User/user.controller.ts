@@ -6,8 +6,7 @@ import catchAsync from "../../../shared/catchAsync";
 
 
 const createAdmin = catchAsync(async (req, res) => {
-    const adminData = req.body;
-    const result = await UserService.createAdmin(adminData);
+    const result = await UserService.createAdmin(req);
 
     sendResponse(res, {
         statusCode: httpStatus.CREATED,
