@@ -8,6 +8,7 @@ import { Request } from "express";
 import { TPaginationOptions } from "../../interfaces/pagination";
 import { PaginationHelper } from "../../../helpers/paginationHelper";
 import { UserSearchableFields } from "./user.constant";
+import { TAuthUser } from "../../interfaces/common";
 
 const createAdmin = async (req: Request): Promise<Admin> => {
     const file = req.file as TFile;
@@ -183,7 +184,7 @@ const changeProfileStatus = async (id: string, payload: { status: UserStatus }) 
     return updateUserStatus;
 }
 
-const getMyProfile = async (user) => {
+const getMyProfile = async (user: TAuthUser) => {
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user?.email,
@@ -232,13 +233,19 @@ const getMyProfile = async (user) => {
     return { ...userInfo, ...profileInfo };
 }
 
-const updateMyProfile = async (user: any, payload: any) => {
+const updateMyProfile = async (user: TAuthUser, req: Request) => {
     const userInfo = await prisma.user.findUniqueOrThrow({
         where: {
             email: user?.email,
             status: UserStatus.ACTIVE
         }
     });
+
+    const file = req.file as TFile;
+    if (file) {
+        const uploadToCloudinary = await fileUploader.uploadToCloudinary(file);
+        req.body.profilePhoto = uploadToCloudinary?.secure_url;
+    }
 
     let profileInfo;
 
@@ -247,7 +254,7 @@ const updateMyProfile = async (user: any, payload: any) => {
             where: {
                 email: userInfo.email
             },
-            data: payload
+            data: req.body
         })
     }
     else if (userInfo.role === UserRole.ADMIN) {
@@ -255,7 +262,7 @@ const updateMyProfile = async (user: any, payload: any) => {
             where: {
                 email: userInfo.email
             },
-            data: payload
+            data: req.body
         })
     }
     else if (userInfo.role === UserRole.DOCTOR) {
@@ -263,7 +270,7 @@ const updateMyProfile = async (user: any, payload: any) => {
             where: {
                 email: userInfo.email
             },
-            data: payload
+            data: req.body
         })
     }
     else if (userInfo.role === UserRole.PATIENT) {
@@ -271,7 +278,7 @@ const updateMyProfile = async (user: any, payload: any) => {
             where: {
                 email: userInfo.email
             },
-            data: payload
+            data: req.body
         })
     }
 

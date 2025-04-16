@@ -3,6 +3,7 @@ import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/sendResponse";
 import { AuthService } from "./auth.service";
 import { Request } from "express";
+import { TAuthUser } from "../../interfaces/common";
 
 const loginUser = catchAsync(async (req, res) => {
     const userData = req.body;
@@ -37,7 +38,7 @@ const refreshToken = catchAsync(async (req, res) => {
     })
 });
 
-const changePassword = catchAsync(async (req: Request & { user?: any }, res) => {
+const changePassword = catchAsync(async (req: Request & { user?: TAuthUser }, res) => {
     const user = req.user;
     const changeData = req.body;
     const result = await AuthService.changePassword(user, changeData);
