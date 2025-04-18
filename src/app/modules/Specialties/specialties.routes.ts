@@ -21,4 +21,20 @@ router.post(
     }
 );
 
+router.patch(
+    '/:id',
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    fileUploader.upload.single('file'),
+    (req: Request, res: Response, next: NextFunction) => {
+        req.body = SpecialtiesValidation.updateSpecialtiesValidationSchema.parse(JSON.parse(req.body.data));
+        return SpecialtiesController.updateSpecialityIntoDB(req, res, next);
+    }
+);
+
+router.delete(
+    '/:id',
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    SpecialtiesController.deleteSpecialityIntoDB
+);
+
 export const SpecialtiesRoutes = router;
