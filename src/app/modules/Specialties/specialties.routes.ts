@@ -7,9 +7,13 @@ import { SpecialtiesValidation } from "./specialties.validation";
 
 const router = express.Router();
 
+router.get('/', SpecialtiesController.getAllSpecialtiesFromDB);
+
+router.get('/:id', SpecialtiesController.getByIdSpecialityFromDB);
+
 router.post(
     '/',
-    // auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     fileUploader.upload.single('file'),
     (req: Request, res: Response, next: NextFunction) => {
         req.body = SpecialtiesValidation.createSpecialtiesValidationSchema.parse(JSON.parse(req.body.data));

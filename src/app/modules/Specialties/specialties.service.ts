@@ -17,6 +17,24 @@ const specialtiesInsertIntoDB = async (req: Request) => {
     return result;
 }
 
+const getAllSpecialtiesFromDB = async () => {
+    const result = await prisma.specialties.findMany();
+
+    return result;
+}
+
+const getByIdSpecialityFromDB = async (id: string) => {
+    const result = await prisma.specialties.findUniqueOrThrow({
+        where: {
+            id
+        }
+    });
+
+    return result;
+}
+
 export const SpecialtiesService = {
-    specialtiesInsertIntoDB
+    specialtiesInsertIntoDB,
+    getAllSpecialtiesFromDB,
+    getByIdSpecialityFromDB
 }
