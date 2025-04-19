@@ -31,18 +31,18 @@ const getByIdDoctorFromDB = catchAsync(async (req, res) => {
     });
 });
 
-// const updateDoctorIntoDB = catchAsync(async (req, res) => {
-//     const { id } = req.params;
-//     const adminData = req.body;
-//     const result = await AdminService.updateAdminIntoDB(id, adminData);
+const updateDoctorIntoDB = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const doctorData = req.body;
+    const result = await DoctorService.updateDoctorIntoDB(id, doctorData);
 
-//     sendResponse(res, {
-//         statusCode: httpStatus.OK,
-//         success: true,
-//         message: "Admin data has been updated successfully.",
-//         data: result
-//     });
-// });
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Doctor data has been updated successfully.",
+        data: result
+    });
+});
 
 const deleteDoctorFromDB = catchAsync(async (req, res) => {
     const { id } = req.params;
@@ -71,7 +71,7 @@ const softDeleteDoctorFromDB = catchAsync(async (req, res) => {
 export const DoctorController = {
     getAllDoctorFromDB,
     getByIdDoctorFromDB,
-    // updateDoctorIntoDB,
+    updateDoctorIntoDB,
     deleteDoctorFromDB,
     softDeleteDoctorFromDB
 }
