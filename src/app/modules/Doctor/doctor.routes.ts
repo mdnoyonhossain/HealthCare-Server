@@ -11,21 +11,21 @@ router.get('/:id', DoctorController.getByIdDoctorFromDB);
 
 router.patch(
     '/:id',
-    // auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-    // validateRequest(DoctorValidation.createDoctorValidationSchema),
-    DoctorController.updateDoctorIntoDB
-);
-
-router.patch(
-    '/soft/:id',
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-    DoctorController.softDeleteDoctorFromDB
+    // validateRequest(DoctorValidation.createDoctorValidationSchema),z
+    DoctorController.updateDoctorIntoDB
 );
 
 router.delete(
     '/:id',
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     DoctorController.deleteDoctorFromDB
+);
+
+router.delete(
+    '/soft/:id',
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    DoctorController.softDeleteDoctorFromDB
 );
 
 export const DoctorRoutes = router;

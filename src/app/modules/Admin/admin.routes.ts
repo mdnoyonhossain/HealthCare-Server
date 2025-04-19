@@ -32,7 +32,7 @@ router.delete(
     AdminController.deleteAdminFromDB
 );
 
-router.patch(
+router.delete(
     '/soft/:id',
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
     AdminController.softDeleteAdminFromDB
