@@ -3,10 +3,10 @@ import catchAsync from "../../../shared/catchAsync";
 import pick from "../../../shared/pick";
 import sendResponse from "../../../shared/sendResponse";
 import { DoctorService } from "./doctor.service";
-import { DoctorSearchableFields } from "./doctor.constant";
+import { DoctorFilterableFields } from "./doctor.constant";
 
 const getAllDoctorFromDB = catchAsync(async (req, res) => {
-    const filters = pick(req.query, DoctorSearchableFields);
+    const filters = pick(req.query, DoctorFilterableFields);
     const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
     const result = await DoctorService.getAllDoctorFromDB(filters, options);
 

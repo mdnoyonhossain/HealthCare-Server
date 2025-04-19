@@ -37,7 +37,6 @@ const getAllDoctorFromDB = async (params: TDoctorFilterRequest, options: TPagina
         })
     };
 
-
     if (Object.keys(filterData).length > 0) {
         const filterConditions = Object.keys(filterData).map(key => ({
             [key]: {
