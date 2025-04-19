@@ -104,31 +104,55 @@ const getByIdDoctorFromDB = async (id: string): Promise<Doctor | null> => {
 
 const updateDoctorIntoDB = async (id: string, payload: any) => {
     const { specialties, ...doctorData } = payload;
+
     const doctorInfo = await prisma.doctor.findUniqueOrThrow({
         where: { id }
     });
 
-    const result = await prisma.$transaction(async (transactionClient) => {
-        const updateDoctorData = await transactionClient.doctor.update({
+    await prisma.$transaction(async (transactionClient) => {
+        await transactionClient.doctor.update({
             where: {
                 id
             },
-            data: doctorData,
-            include: {
-                doctorSpecialties: true
-            }
+            data: doctorData
         });
 
-        for (const specialitiesId of specialties) {
-            const createDoctorSpecialties = await transactionClient.doctorSpecialties.create({
-                data: {
-                    doctorId: doctorInfo.id,
-                    specialitiesId: specialitiesId
-                }
-            })
-        }
+        if (specialties && specialties.length > 0) {
+            // delete specialties
+            const deleteSpecialtiesIds = specialties.filter((specialty: any) => specialty.isDeleted)
+            for (const specialty of deleteSpecialtiesIds) {
+                await transactionClient.doctorSpecialties.deleteMany({
+                    where: {
+                        doctorId: doctorInfo.id,
+                        specialitiesId: specialty.specialitiesId
+                    }
+                })
+            }
 
-        return updateDoctorData;
+            // create specialties
+            const createSpecialtiesIds = specialties.filter((specialty: any) => !specialty.isDeleted);
+            for (const specialty of createSpecialtiesIds) {
+                await transactionClient.doctorSpecialties.create({
+                    data: {
+                        doctorId: doctorInfo.id,
+                        specialitiesId: specialty.specialitiesId
+                    }
+                })
+            }
+        }
+    });
+
+    const result = await prisma.doctor.findUniqueOrThrow({
+        where: {
+            id: doctorInfo.id
+        },
+        include: {
+            doctorSpecialties: {
+                include: {
+                    specialties: true
+                }
+            }
+        }
     });
 
     return result;
