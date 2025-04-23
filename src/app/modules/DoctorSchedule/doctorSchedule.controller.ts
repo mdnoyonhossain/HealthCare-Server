@@ -5,6 +5,7 @@ import { DoctorScheduleService } from "./doctorSchedule.service";
 import { Request } from "express";
 import { TAuthUser } from "../../interfaces/common";
 import pick from "../../../shared/pick";
+import { ScheduleFilterableFields } from "./doctorSchedule.constant";
 
 const createDoctorSchedule = catchAsync(async (req: Request & { user?: TAuthUser }, res) => {
     const user = req.user;
@@ -46,8 +47,22 @@ const deleteDoctorScheduleFromDB = catchAsync(async (req: Request & { user?: TAu
     });
 });
 
+const getAllDoctorScheduleFromDB = catchAsync(async (req, res) => {
+    const filters = pick(req.query, ScheduleFilterableFields);
+    const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
+    const result = await DoctorScheduleService.getAllDoctorScheduleFromDB(filters, options);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Doctor Schedule data retrieved successfully.",
+        data: result
+    });
+});
+
 export const DoctorScheduleController = {
     createDoctorSchedule,
     getMyDoctorScheduleFromDB,
-    deleteDoctorScheduleFromDB
+    deleteDoctorScheduleFromDB,
+    getAllDoctorScheduleFromDB
 }

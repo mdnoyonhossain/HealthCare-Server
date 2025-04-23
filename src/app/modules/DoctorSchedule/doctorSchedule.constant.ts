@@ -1,0 +1,1 @@
+export const ScheduleFilterableFields: string[] = ['searchTerm', 'isBooked', 'doctorId'];
