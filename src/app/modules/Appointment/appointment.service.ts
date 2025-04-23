@@ -16,7 +16,7 @@ const createAppointment = async (user: TAuthUser, payload: TAppointment) => {
         }
     });
 
-    const doctorScheduleData = await prisma.doctorSchedules.findFirstOrThrow({
+    await prisma.doctorSchedules.findFirstOrThrow({
         where: {
             doctorId: doctorData.id,
             scheduleId: payload.scheduleId,
@@ -26,18 +26,35 @@ const createAppointment = async (user: TAuthUser, payload: TAppointment) => {
 
     const videoCallingId = uuidv4();
 
-    const result = await prisma.appointment.create({
-        data: {
-            patientId: patientData.id,
-            doctorId: doctorData.id,
-            scheduleId: payload.scheduleId,
-            videoCallingId: videoCallingId
-        },
-        include: {
-            patient: true,
-            doctor: true,
-            schedule: true
-        }
+    const result = await prisma.$transaction(async (transactionClient) => {
+        const appointmentData = await transactionClient.appointment.create({
+            data: {
+                patientId: patientData.id,
+                doctorId: doctorData.id,
+                scheduleId: payload.scheduleId,
+                videoCallingId: videoCallingId
+            },
+            include: {
+                patient: true,
+                doctor: true,
+                schedule: true
+            }
+        });
+
+        await transactionClient.doctorSchedules.update({
+            where: {
+                doctorId_scheduleId: {
+                    doctorId: doctorData.id,
+                    scheduleId: payload.scheduleId
+                }
+            },
+            data: {
+                isBooked: true,
+                appointmentId: appointmentData.id
+            }
+        });
+
+        return appointmentData;
     });
 
     return result;
