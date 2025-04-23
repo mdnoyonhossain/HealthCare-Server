@@ -3,7 +3,7 @@ import prisma from "../../../shared/prisma";
 import { TFilterRequest, TSchedule } from "./schedule.interface";
 import { PaginationHelper } from "../../../helpers/paginationHelper";
 import { TPaginationOptions } from "../../interfaces/pagination";
-import { Prisma } from "@prisma/client";
+import { Prisma, Schedule } from "@prisma/client";
 import { TAuthUser } from "../../interfaces/common";
 
 const createSchedule = async (payload: TSchedule) => {
@@ -109,7 +109,7 @@ const getAllScheduleFromDB = async (filters: TFilterRequest, options: TPaginatio
             }
         }
     });
-    
+
     const doctorScheduleIds = doctorSchedules.map(schedule => schedule.scheduleId);
 
     const result = await prisma.schedule.findMany({
@@ -143,7 +143,18 @@ const getAllScheduleFromDB = async (filters: TFilterRequest, options: TPaginatio
     };
 }
 
+const getByIdScheduleFromDB = async (id: string): Promise<Schedule | null> => {
+    const result = await prisma.schedule.findUniqueOrThrow({
+        where: {
+            id
+        }
+    });
+    
+    return result;
+};
+
 export const ScheduleService = {
     createSchedule,
-    getAllScheduleFromDB
+    getAllScheduleFromDB,
+    getByIdScheduleFromDB
 }

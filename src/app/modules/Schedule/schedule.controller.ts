@@ -32,7 +32,20 @@ const getAllScheduleFromDB = catchAsync(async (req: Request & { user?: TAuthUser
     });
 });
 
+const getByIdScheduleFromDB = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const result = await ScheduleService.getByIdScheduleFromDB(id);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Schedule data retrieved successfully.",
+        data: result
+    });
+});
+
 export const ScheduleController = {
     createSchedule,
-    getAllScheduleFromDB
+    getAllScheduleFromDB,
+    getByIdScheduleFromDB
 }
