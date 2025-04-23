@@ -4,6 +4,8 @@ import prisma from "../../../shared/prisma"
 import { TAuthUser } from "../../interfaces/common";
 import { TPaginationOptions } from "../../interfaces/pagination";
 import { TDoctorScheduleIds } from "./doctorSchedule.interface";
+import ApiError from "../../errors/ApiError";
+import httpStatus from "http-status";
 
 const createDoctorSchedule = async (user: any, payload: TDoctorScheduleIds) => {
     const doctorData = await prisma.doctor.findUniqueOrThrow({
@@ -59,7 +61,7 @@ const getMyDoctorScheduleFromDB = async (filters: any, options: TPaginationOptio
         else if (typeof filterData.isBooked === 'string' && filterData.isBooked === 'false') {
             filterData.isBooked = false
         }
-        
+
         andConditions.push({
             AND: Object.keys(filterData).map(key => {
                 return {
@@ -96,7 +98,39 @@ const getMyDoctorScheduleFromDB = async (filters: any, options: TPaginationOptio
     };
 }
 
+const deleteDoctorScheduleFromDB = async (user: TAuthUser, scheduleId: string) => {
+    const doctorData = await prisma.doctor.findUniqueOrThrow({
+        where: {
+            email: user?.email
+        }
+    });
+
+    const isBookedDoctorSchedule = await prisma.doctorSchedules.findFirst({
+        where: {
+            doctorId: doctorData.id,
+            scheduleId: scheduleId,
+            isBooked: true
+        }
+    });
+
+    if (isBookedDoctorSchedule) {
+        throw new ApiError(httpStatus.BAD_REQUEST, "You can not deeted the schedule because of the schedule is already booked.")
+    }
+
+    const result = await prisma.doctorSchedules.delete({
+        where: {
+            doctorId_scheduleId: {
+                doctorId: doctorData.id,
+                scheduleId: scheduleId
+            }
+        }
+    });
+
+    return result;
+}
+
 export const DoctorScheduleService = {
     createDoctorSchedule,
-    getMyDoctorScheduleFromDB
+    getMyDoctorScheduleFromDB,
+    deleteDoctorScheduleFromDB
 }
