@@ -4,6 +4,7 @@ import sendResponse from "../../../shared/sendResponse";
 import { AppointmentService } from "./appointment.service";
 import { Request } from "express";
 import { TAuthUser } from "../../interfaces/common";
+import pick from "../../../shared/pick";
 
 const createAppointment = catchAsync(async (req: Request & { user?: TAuthUser }, res) => {
     const user = req.user;
@@ -18,6 +19,21 @@ const createAppointment = catchAsync(async (req: Request & { user?: TAuthUser },
     });
 });
 
+const getMyAppointment = catchAsync(async (req: Request & { user?: TAuthUser }, res) => {
+    const user = req.user;
+    const filters = pick(req.query, ['status', 'paymentStatus']);
+    const options = pick(req.query, ['page', 'limit', 'sortBy', 'sortOrder']);
+    const result = await AppointmentService.getMyAppointment(user as TAuthUser, filters, options);
+
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "My Appointment data retrieved successfully.",
+        data: result
+    });
+});
+
 export const AppointmentController = {
-    createAppointment
+    createAppointment,
+    getMyAppointment
 }

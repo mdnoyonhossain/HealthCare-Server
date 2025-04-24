@@ -50,8 +50,7 @@ const getAllDoctorFromDB = async (params: TDoctorFilterRequest, options: TPagina
         isDeleted: false,
     });
 
-    const whereConditions: Prisma.DoctorWhereInput =
-        andConditions.length > 0 ? { AND: andConditions } : {};
+    const whereConditions: Prisma.DoctorWhereInput = andConditions.length > 0 ? { AND: andConditions } : {};
 
     const result = await prisma.doctor.findMany({
         where: whereConditions,
