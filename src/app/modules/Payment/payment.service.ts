@@ -1,7 +1,5 @@
-import axios from "axios";
 import prisma from "../../../shared/prisma";
 import { SSLService } from "../SSL/ssl.service";
-import config from "../../../config";
 import { PaymentStatus } from "@prisma/client";
 
 const initPayment = async (appointmentId: string) => {
