@@ -35,6 +35,7 @@ const initPayment = async (appointmentId: string) => {
 }
 
 const validatePayment = async (payload: any) => {
+    // live
     // if (!payload || !payload.status || !(payload.status === 'VALID')) {
     //     return {
     //         message: "Invalid Payment!"
@@ -49,6 +50,7 @@ const validatePayment = async (payload: any) => {
     //     }
     // }
 
+    // local
     const response = payload;
 
     await prisma.$transaction(async (transactionClient) => {
