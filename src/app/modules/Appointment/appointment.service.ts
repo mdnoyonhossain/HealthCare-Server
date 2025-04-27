@@ -1,4 +1,4 @@
-import { Prisma, UserRole } from "@prisma/client";
+import { AppointmentStatus, Prisma, UserRole } from "@prisma/client";
 import { PaginationHelper } from "../../../helpers/paginationHelper";
 import prisma from "../../../shared/prisma";
 import { TAuthUser } from "../../interfaces/common";
@@ -196,8 +196,28 @@ const getAllAppointment = async (filters: any, options: TPaginationOptions) => {
     }
 };
 
+const changeAppointmentStatus = async (appointmentId: string, status: AppointmentStatus) => {
+    const appointmentData = await prisma.appointment.findUniqueOrThrow({
+        where: {
+            id: appointmentId
+        }
+    });
+
+    const result = await prisma.appointment.update({
+        where: {
+            id: appointmentId
+        },
+        data: {
+            status
+        }
+    });
+
+    return result;
+}
+
 export const AppointmentService = {
     createAppointment,
     getMyAppointment,
-    getAllAppointment
+    getAllAppointment,
+    changeAppointmentStatus
 }
