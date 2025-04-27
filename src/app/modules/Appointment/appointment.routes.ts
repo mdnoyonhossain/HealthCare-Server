@@ -28,6 +28,7 @@ router.post(
 
 router.patch(
     '/status/:id',
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
     AppointmentController.changeAppointmentStatus
 );
 
