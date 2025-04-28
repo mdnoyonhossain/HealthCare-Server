@@ -2,6 +2,8 @@ import express from "express";
 import auth from "../../middlewares/auth";
 import { UserRole } from "@prisma/client";
 import { DoctorController } from "./doctor.controller";
+import validateRequest from "../../middlewares/validateRequest";
+import { DoctorValidation } from "./doctor.validation";
 
 const router = express.Router();
 
@@ -12,7 +14,7 @@ router.get('/:id', DoctorController.getByIdDoctorFromDB);
 router.patch(
     '/:id',
     auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
-    // validateRequest(DoctorValidation.createDoctorValidationSchema),z
+    validateRequest(DoctorValidation.updateDoctorValidationSchema),
     DoctorController.updateDoctorIntoDB
 );
 

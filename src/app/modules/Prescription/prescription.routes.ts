@@ -8,6 +8,12 @@ import { PrescriptionValidation } from "./prescription.validation";
 const router = express.Router();
 
 router.get(
+    '/',
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    PrescriptionController.getAllPrescription
+);
+
+router.get(
     '/my-prescription',
     auth(UserRole.PATIENT),
     PrescriptionController.getMyPrescription
