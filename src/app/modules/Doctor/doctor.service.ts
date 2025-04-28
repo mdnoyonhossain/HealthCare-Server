@@ -58,7 +58,7 @@ const getAllDoctorFromDB = async (params: TDoctorFilterRequest, options: TPagina
         take: limit,
         orderBy: options.sortBy && options.sortOrder
             ? { [options.sortBy]: options.sortOrder }
-            : { createdAt: 'desc' },
+            : { averageRating: 'desc' },
         include: {
             doctorSpecialties: {
                 include: {

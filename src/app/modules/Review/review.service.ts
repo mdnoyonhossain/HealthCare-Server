@@ -24,17 +24,34 @@ const createReviewIntoDB = async (user: TAuthUser, payload: any) => {
         throw new ApiError(httpStatus.BAD_REQUEST, "You are not authorized to review this appointment.");
     }
 
-    const result = await prisma.review.create({
-        data: {
-            appointmentId: appointmentData.id,
-            doctorId: appointmentData.doctorId,
-            patientId: appointmentData.patientId,
-            rating: payload.rating,
-            comment: payload.comment
-        }
-    });
+    return await prisma.$transaction(async (transactionClient) => {
+        const result = await transactionClient.review.create({
+            data: {
+                appointmentId: appointmentData.id,
+                doctorId: appointmentData.doctorId,
+                patientId: appointmentData.patientId,
+                rating: payload.rating,
+                comment: payload.comment
+            }
+        });
 
-    return result;
+        const averageRating = await transactionClient.review.aggregate({
+            _avg: {
+                rating: true
+            }
+        });
+
+        await transactionClient.doctor.update({
+            where: {
+                id: result.doctorId
+            },
+            data: {
+                averageRating: averageRating._avg.rating as number
+            }
+        });
+
+        return result;
+    });
 }
 
 const getAllReviewFromDB = async (filters: TReviewFilterRequest, options: TPaginationOptions) => {
