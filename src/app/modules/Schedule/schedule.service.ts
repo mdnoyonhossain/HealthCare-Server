@@ -6,6 +6,11 @@ import { TPaginationOptions } from "../../interfaces/pagination";
 import { Prisma, Schedule } from "@prisma/client";
 import { TAuthUser } from "../../interfaces/common";
 
+const convertDateTime = async (date: Date) => {
+    const offset = date.getTimezoneOffset() * 60000;
+    return new Date(date.getTime() + offset);
+}
+
 const createSchedule = async (payload: TSchedule) => {
     const { startDate, endDate, startTime, endTime } = payload;
     const interverlTime = 30;
@@ -36,9 +41,12 @@ const createSchedule = async (payload: TSchedule) => {
         );
 
         while (startDateTime < endDateTime) {
+            const convertStartDateTimeToUTC = await convertDateTime(startDateTime);
+            const convertEndDateTimeToUTC = await convertDateTime(addMinutes(startDateTime, interverlTime));
+
             const scheduleData = {
-                startDateTime: startDateTime,
-                endDateTime: addMinutes(startDateTime, interverlTime)
+                startDateTime: convertStartDateTimeToUTC,
+                endDateTime: convertEndDateTimeToUTC
             }
 
             const existingSchedule = await prisma.schedule.findFirst({
@@ -149,7 +157,7 @@ const getByIdScheduleFromDB = async (id: string): Promise<Schedule | null> => {
             id
         }
     });
-
+    
     return result;
 };
 
