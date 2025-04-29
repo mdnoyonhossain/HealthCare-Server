@@ -14,8 +14,6 @@
 - **Agora.io (WebRTC)** – Real-time communication between doctors and patients
 - **Nodemailer** – Emailing system for prescriptions and notifications
 
----
-
 ## Features
 
 ### ✅ Admin
