@@ -51,4 +51,4 @@
 - Run the Command: `npm run seed`
 - Start the server: `npm run dev`
 
-### API Documentation: [POSTMAN API DOCUMENTATION (Click Here)](https://documenter.getpostman.com/view/26694209/2sA2xjyWRv)
+### API Documentation: [POSTMAN API DOCUMENTATION (Click Here)](https://documenter.getpostman.com/view/31204344/2sB2j3BBWG)
