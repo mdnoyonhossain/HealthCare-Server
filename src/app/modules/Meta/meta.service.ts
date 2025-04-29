@@ -40,8 +40,9 @@ const getSuperAdminMetaData = async () => {
     });
 
     const bartChartData = await getBarChartData();
+    const pieChartData = await getPieChartData();
 
-    return { appointmentCount, adminCount, patientCount, doctorCount, paymentCount, totalRevenue, bartChartData }
+    return { appointmentCount, adminCount, patientCount, doctorCount, paymentCount, totalRevenue, bartChartData, pieChartData }
 }
 
 const getAdminMetaData = async () => {
@@ -57,7 +58,10 @@ const getAdminMetaData = async () => {
         }
     });
 
-    return { appointmentCount, patientCount, doctorCount, paymentCount, totalRevenue }
+    const bartChartData = await getBarChartData();
+    const pieChartData = await getPieChartData();
+
+    return { appointmentCount, patientCount, doctorCount, paymentCount, totalRevenue, bartChartData, pieChartData }
 }
 
 const getDoctorMetaData = async (user: TAuthUser) => {
@@ -165,6 +169,20 @@ const getBarChartData = async () => {
     `
 
     return appointmentCountByMonth;
+}
+
+const getPieChartData = async () => {
+    const appointmentStatusDistribution = await prisma.appointment.groupBy({
+        by: ['status'],
+        _count: { id: true }
+    });
+
+    const formatedAppointmentStatusDistribution = appointmentStatusDistribution.map((count) => ({
+        status: count.status,
+        count: Number(count._count.id)
+    }));
+
+    return formatedAppointmentStatusDistribution;
 }
 
 export const MetaService = {
