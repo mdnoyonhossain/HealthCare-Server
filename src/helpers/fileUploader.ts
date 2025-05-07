@@ -3,11 +3,12 @@ import path from "path"
 import { v2 as cloudinary } from 'cloudinary';
 import fs from "fs";
 import { TCloudinaryResponse, TFile } from "../app/interfaces/file";
+import config from "../config";
 
 cloudinary.config({
-    cloud_name: 'deojcyafw',
-    api_key: '993997657296863',
-    api_secret: '2X5fMT0rb-9sIA3KSyERbzrmOmo' // Click 'View API Keys' above to copy your API secret
+    cloud_name: config.cloudinary.cloudinary_cloud_name,
+    api_key: config.cloudinary.cloudinary_api_key,
+    api_secret: config.cloudinary.cloudinary_api_secret
 });
 
 // multer

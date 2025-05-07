@@ -15,7 +15,36 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req: Request, res: Response) => {
-    res.send({ message: "HealthCare Server.." });
+    res.send(`
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+          <meta charset="UTF-8" />
+          <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+          <title>HealthCare API Server</title>
+          <style>
+              body {
+                  font-family: Arial, sans-serif;
+                  background-color: #f5f5f5;
+                  text-align: center;
+                  padding: 50px;
+              }
+              h1 {
+                  color: #2c3e50;
+              }
+              p {
+                  color: #34495e;
+              }
+          </style>
+      </head>
+      <body>
+          <h1>Welcome to the HealthCare Server</h1>
+          <p>Status: <strong>Running</strong></p>
+          <p>Server Time: ${new Date().toLocaleString()}</p>
+          <p>Version: 1.0.0</p>
+      </body>
+      </html>
+    `);
 });
 
 cron.schedule('* * * * *', () => {
