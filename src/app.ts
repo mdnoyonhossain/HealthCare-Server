@@ -15,7 +15,7 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 
 app.get('/', (req: Request, res: Response) => {
-    res.send({ message: "PH-HealthCare Server.." });
+    res.send({ message: "HealthCare Server.." });
 });
 
 cron.schedule('* * * * *', () => {

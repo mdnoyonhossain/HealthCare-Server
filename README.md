@@ -1,6 +1,6 @@
-# 🏥 PH HealthCare – Server
+# HealthCare – Server
 
-**PH HealthCare** is a backend system for a robust healthcare management web application. It is built to simplify and secure the interactions between patients, doctors, and administrators. This repository handles APIs, authentication, appointment management, real-time communication (via WebRTC), medical data processing, and more.
+**HealthCare** is a backend system for a robust healthcare management web application. It is built to simplify and secure the interactions between patients, doctors, and administrators. This repository handles APIs, authentication, appointment management, real-time communication (via WebRTC), medical data processing, and more.
 
 ---
 
@@ -42,7 +42,7 @@
 - Email notifications for bookings, invoices, and prescriptions
 
 ## Installation and Setup
-- Clone this repository: `git clone https://github.com/mdnoyonhossain/PH-HealthCare-Server`
+- Clone this repository: `git clone https://github.com/mdnoyonhossain/HealthCare-Server`
 - Install dependencies: `npm install`
 - Set up the environment variables by creating a `.env` file and filling in the required variables based on the provided `.env.example` file.
 - Run the database migrations: `npx prisma migrate dev`

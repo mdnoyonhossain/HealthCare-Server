@@ -16,9 +16,9 @@ export const emailSender = async (email: string, html: string) => {
     });
 
     await transporter.sendMail({
-        from: `"PH-HealthCare Support" <${config.emailSender.sender_email}>`,
+        from: `"HealthCare Support" <${config.emailSender.sender_email}>`,
         to: email,
-        subject: "Reset Your Password - PH HealthCare",
+        subject: "Reset Your Password - HealthCare",
         html
     });
 };
