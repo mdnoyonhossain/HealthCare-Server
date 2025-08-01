@@ -115,8 +115,21 @@ const getMyAppointment = async (user: TAuthUser, filters: any, options: TPaginat
         orderBy: options.sortBy && options.sortOrder
             ? { [options.sortBy]: options.sortOrder }
             : { createdAt: 'desc' },
-        include: user?.role === UserRole.PATIENT
-            ? { doctor: true, schedule: true } : { patient: { include: { medicalReport: true, patientHealthData: true } }, schedule: true }
+        include: {
+            schedule: true,
+            doctor: true,
+            review: true,
+            prescription: true,
+            ...(user?.role !== UserRole.PATIENT && {
+                patient: {
+                    include: {
+                        medicalReport: true,
+                        patientHealthData: true,
+                        appointment: true,
+                    },
+                },
+            }),
+        },
     });
 
     const total = await prisma.appointment.count({
@@ -180,7 +193,9 @@ const getAllAppointment = async (filters: any, options: TPaginationOptions) => {
                 },
         include: {
             doctor: true,
-            patient: true
+            patient: true,
+            review: true,
+            schedule: true
         }
     });
 
@@ -240,8 +255,8 @@ const cancelUnpaidAppointments = async () => {
 
     const appointmentIdsToCancel = unPaidAppointments.map(appointment => appointment.id);
 
-    await prisma.$transaction(async (transactionClietn) => {
-        await transactionClietn.payment.deleteMany({
+    await prisma.$transaction(async (transactionClient) => {
+        await transactionClient.review.deleteMany({
             where: {
                 appointmentId: {
                     in: appointmentIdsToCancel
@@ -249,7 +264,15 @@ const cancelUnpaidAppointments = async () => {
             }
         });
 
-        await transactionClietn.appointment.deleteMany({
+        await transactionClient.payment.deleteMany({
+            where: {
+                appointmentId: {
+                    in: appointmentIdsToCancel
+                }
+            }
+        });
+
+        await transactionClient.appointment.deleteMany({
             where: {
                 id: {
                     in: appointmentIdsToCancel
@@ -258,18 +281,19 @@ const cancelUnpaidAppointments = async () => {
         });
 
         for (const unPaidAppointment of unPaidAppointments) {
-            await transactionClietn.doctorSchedules.updateMany({
+            await transactionClient.doctorSchedules.updateMany({
                 where: {
                     doctorId: unPaidAppointment.doctorId,
                     scheduleId: unPaidAppointment.scheduleId
                 },
                 data: {
-                    isBooked: false
+                    isBooked: false,
+                    appointmentId: null
                 }
             });
         }
     });
-}
+};
 
 export const AppointmentService = {
     createAppointment,

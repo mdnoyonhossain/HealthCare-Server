@@ -11,7 +11,7 @@ const createPrescription = async (user: TAuthUser, payload: Partial<Prescription
     const appointmentData = await prisma.appointment.findUniqueOrThrow({
         where: {
             id: payload.appointmentId,
-            status: AppointmentStatus.COMPLETED,
+            // status: AppointmentStatus.COMPLETED,
             paymentStatus: PaymentStatus.PAID
         },
         include: {
@@ -56,7 +56,13 @@ const getMyPrescription = async (user: TAuthUser, options: TPaginationOptions) =
         include: {
             doctor: true,
             patient: true,
-            appointment: true
+            appointment: {
+                include: {
+                    schedule: true,
+                    payment: true
+                }
+            },
+
         }
     });
 

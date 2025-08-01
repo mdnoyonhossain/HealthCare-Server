@@ -13,7 +13,7 @@ router.get('/:id', DoctorController.getByIdDoctorFromDB);
 
 router.patch(
     '/:id',
-    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN),
+    auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR),
     validateRequest(DoctorValidation.updateDoctorValidationSchema),
     DoctorController.updateDoctorIntoDB
 );
